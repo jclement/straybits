@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "straybits",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-07-01",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"],
+    "not_found_handling": "404-page"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "straybits",
+      "database_id": "5a52c899-051d-4429-bbaa-00f7f9ddc37a"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+  // When ready to point straybits.ca at this worker (this will take over from
+  // the current Ghost site!), uncomment:
+  // ,"routes": [
+  //   { "pattern": "straybits.ca", "custom_domain": true },
+  //   { "pattern": "www.straybits.ca", "custom_domain": true }
+  // ]
+}

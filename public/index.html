@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Straybits — independent software &amp; technology consultancy</title>
+  <meta name="description" content="Straybits Corporation is a small, independent technology company. Consulting, software development, and security — done quietly and done right.">
+  <meta property="og:title" content="Straybits Corporation">
+  <meta property="og:description" content="Wrangling stray bits into working software. Independent consulting, development, and security.">
+  <meta property="og:image" content="https://www.straybits.ca/assets/icon-512.png">
+  <meta property="og:url" content="https://www.straybits.ca/">
+  <meta name="theme-color" content="#08090c">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png">
+  <link rel="apple-touch-icon" href="/assets/icon-180.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<canvas id="bits" aria-hidden="true"></canvas>
+
+<nav>
+  <div class="nav-inner">
+    <a class="brand" href="/">
+      <img src="/assets/icon-192.png" alt="" width="30" height="30">
+      <span>stray<span class="bits">bits</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="#services">./services</a>
+      <a href="#about">./about</a>
+      <a href="#contact">./contact</a>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- ── hero ─────────────────────────────────────────────────────────── -->
+  <header class="hero">
+    <div>
+      <p class="eyebrow">// straybits corporation</p>
+      <h1>Wrangling stray bits into <span class="accent">working software</span>.</h1>
+      <p class="lede">An independent software &amp; technology consultancy. Strategy, development, and security — taken on sparingly, and done properly.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#contact">$ get in touch</a>
+        <a class="btn btn-ghost" href="#services">$ what we do</a>
+      </div>
+    </div>
+    <div class="terminal reveal">
+      <div class="terminal-bar">
+        <span></span><span></span><span></span>
+        <span class="title">jsc@straybits: ~</span>
+      </div>
+      <div class="terminal-body" id="term" aria-live="off"></div>
+    </div>
+    <img class="hero-shield" src="/assets/logo.png" alt="">
+  </header>
+
+  <!-- ── services ─────────────────────────────────────────────────────── -->
+  <section id="services">
+    <div class="section-head reveal">
+      <p class="eyebrow">// services</p>
+      <h2>Three things, done well.</h2>
+    </div>
+    <div class="cards">
+      <div class="card reveal">
+        <span class="num">[01]</span>
+        <h3>Consulting &amp; Architecture</h3>
+        <p>Technology strategy, systems architecture, and code review. A second set of eyes when the stakes are high, or a first set when nobody's sure where to start.</p>
+      </div>
+      <div class="card reveal">
+        <span class="num">[02]</span>
+        <h3>Software Development</h3>
+        <p>Custom software, end to end — web apps, APIs, integrations, and the unglamorous plumbing that holds it all together. Built to be maintained, not just shipped.</p>
+      </div>
+      <div class="card reveal">
+        <span class="num">[03]</span>
+        <h3>Security &amp; Operations</h3>
+        <p>Hardening, infrastructure, and keeping things running. Practical security for teams that would rather prevent the incident than star in the post-mortem.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── about ────────────────────────────────────────────────────────── -->
+  <section id="about">
+    <div class="section-head reveal">
+      <p class="eyebrow">// about</p>
+      <h2>Small on purpose.</h2>
+    </div>
+    <div class="about-grid reveal">
+      <img src="/assets/logo.png" alt="Straybits shield logo">
+      <div>
+        <p><strong>Straybits Corporation</strong> is a small, independent technology company based in Canada. We've spent decades building, securing, and untangling software systems — from scrappy startups to critical infrastructure.</p>
+        <p>We keep a short client list and take on new work sparingly, mostly by referral. The rest of the time we're off building things we find interesting. If you think we can help with something, we'd still love to hear from you.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── contact ──────────────────────────────────────────────────────── -->
+  <section id="contact">
+    <div class="section-head reveal">
+      <p class="eyebrow">// contact</p>
+      <h2>Say hello.</h2>
+    </div>
+    <div class="contact-panel reveal">
+      <form id="contact-form" novalidate>
+        <div class="field">
+          <label for="cf-name">Name</label>
+          <input id="cf-name" name="name" type="text" required maxlength="200" autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="cf-email">Email</label>
+          <input id="cf-email" name="email" type="email" required maxlength="320" autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="cf-message">Message</label>
+          <textarea id="cf-message" name="message" required maxlength="5000"></textarea>
+        </div>
+        <div class="field hp" aria-hidden="true">
+          <label for="cf-website">Website</label>
+          <input id="cf-website" name="website" type="text" tabindex="-1" autocomplete="off">
+        </div>
+        <p class="captcha-status" id="captcha-status"><span class="dot"></span><span id="captcha-text">proof-of-work: idle</span></p>
+        <div>
+          <button class="btn btn-primary" id="cf-submit" type="submit">$ send message</button>
+        </div>
+        <p class="form-result" id="form-result" role="status"></p>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="left">
+      <img src="/assets/icon-192.png" alt="">
+      <span>© <span id="year">2026</span> Straybits Corporation</span>
+    </div>
+    <div class="footer-links">
+      <a href="/privacy">privacy</a>
+      <a href="https://github.com/jclement" rel="noopener">github</a>
+    </div>
+  </div>
+</footer>
+
+<script src="/app.js" defer></script>
+</body>
+</html>

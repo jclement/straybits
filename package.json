@@ -1,0 +1,14 @@
+{
+  "name": "straybits",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Straybits Corporation landing page — Cloudflare Worker",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "messages": "wrangler d1 execute straybits --remote --command \"SELECT id, created_at, name, email, message FROM messages ORDER BY id DESC LIMIT 20\""
+  },
+  "devDependencies": {
+    "wrangler": "^4.110.0"
+  }
+}
