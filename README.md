@@ -41,14 +41,16 @@ wrangler d1 create straybits                      # ID goes in wrangler.jsonc
 wrangler d1 execute straybits --remote --file schema.sql
 wrangler secret put CAPTCHA_SECRET                # any long random string
 wrangler secret put ADMIN_TOKEN                   # bearer token for /api/messages
+wrangler secret put HALMAIL_API_KEY               # hal_… key from halmail.app → Connections
 ```
 
 ## Domains & notifications
 
 Deployed to `straybits.ca` and `www.straybits.ca` as Worker custom domains
-(`routes` in wrangler.jsonc). Contact submissions also email jeff@erraticbits.ca
-via the `send_email` binding — sent from `notify@soohno.com`, since Email
-Routing can't be enabled on domains whose MX is Fastmail (see CLAUDE.md).
+(`routes` in wrangler.jsonc). Contact submissions are also emailed to
+`NOTIFY_TO` via [halmail](https://halmail.app) (a Straybits product) as one-way
+no-reply sends — the recipient must be a verified halmail recipient, and the
+`HALMAIL_API_KEY` secret must hold a halmail API key (see CLAUDE.md).
 
 ## Local dev
 

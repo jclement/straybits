@@ -65,20 +65,29 @@ Products are cards in the `#products` section of `index.html`:
 
 ## Notifications & reading messages
 
-- Successful submissions email jeff@erraticbits.ca via the `send_email`
-  binding (best-effort, `ctx.waitUntil`; D1 is the source of truth).
-- Sender is `notify@soohno.com`: Cloudflare refuses to enable Email Routing on
-  straybits.ca/erraticbits.ca because their Fastmail MX records exist, so the
-  spare zone soohno.com was routing-enabled to act as the sending domain. The
-  destination must stay a verified Email Routing destination address on the
-  Cloudflare account.
+- Successful submissions are emailed via **halmail** (https://halmail.app —
+  straybits' own product): `POST https://halmail.app/api/v1/messages` with
+  `Authorization: Bearer <HALMAIL_API_KEY>`, no `from_address_id` (= one-way
+  no-reply send). Best-effort in `ctx.waitUntil`; D1 is the source of truth.
+- `NOTIFY_TO` (wrangler.jsonc vars) must be a **verified recipient** in the
+  halmail account that owns the key — halmail rejects everyone else (422
+  send_rejected), and only a human can verify recipients (halmail.app →
+  Recipients). Watch the plan's daily send cap (free = 5/day).
+- API keys are minted at halmail.app → Connections (passkey-protected, secret
+  shown once) and stored as the `HALMAIL_API_KEY` worker secret.
 - `npm run messages` dumps recent submissions from D1, or
   `curl -H "Authorization: Bearer <ADMIN_TOKEN>" https://straybits.ca/api/messages`.
+- (History: notifications briefly used Cloudflare's send_email binding from
+  soohno.com, because Email Routing can't be enabled on Fastmail-MX domains
+  like straybits.ca. Replaced by halmail; soohno.com routing was disabled
+  again, though its leftover route*.mx.cloudflare.net MX + SPF records may
+  still exist.)
 
 ## Secrets & infrastructure
 
 - Worker secrets (already set): `CAPTCHA_SECRET`, `ADMIN_TOKEN` (local copy in
-  `.admin-token-KEEP-SAFE.txt`, gitignored). Rotate with `wrangler secret put`.
+  `.admin-token-KEEP-SAFE.txt`, gitignored), `HALMAIL_API_KEY`. Rotate with
+  `wrangler secret put`.
 - GitHub repo secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`
   (token lives in 1Password at `Private/Cloudflare`).
 - D1 database `straybits` (id in wrangler.jsonc); schema in `schema.sql`.

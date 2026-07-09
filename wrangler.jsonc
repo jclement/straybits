@@ -19,20 +19,12 @@
   "observability": {
     "enabled": true
   },
-  // Contact-form notifications. The sender domain must be a zone on this
-  // account with Email Routing ENABLED — straybits.ca can't be (Cloudflare
-  // refuses while its Fastmail MX records exist), so we send from soohno.com,
-  // a spare zone set up for exactly this. Destination must be a verified
-  // Email Routing destination address on the account.
-  "send_email": [
-    {
-      "name": "NOTIFY",
-      "destination_address": "jeff@erraticbits.ca"
-    }
-  ],
+  // Contact-form notifications go through halmail (https://halmail.app),
+  // straybits' own product: one-way no-reply sends via its JSON API.
+  // NOTIFY_TO must be a verified recipient in the halmail account that owns
+  // the HALMAIL_API_KEY secret.
   "vars": {
-    "NOTIFY_FROM": "notify@soohno.com",
-    "NOTIFY_TO": "jeff@erraticbits.ca"
+    "NOTIFY_TO": "jeff@straybits.ca"
   },
   "routes": [
     { "pattern": "straybits.ca", "custom_domain": true },

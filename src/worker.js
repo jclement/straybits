@@ -12,8 +12,6 @@
  *  - honeypot field + minimum time-on-page
  */
 
-import { EmailMessage } from "cloudflare:email";
-
 const DIFFICULTY = 15; // leading zero bits; ~32k hashes on average, <1s in a browser
 const CHALLENGE_MIN_AGE_MS = 2_000;
 const CHALLENGE_MAX_AGE_MS = 20 * 60_000;
@@ -73,37 +71,28 @@ async function issueChallenge(env) {
   return json({ challenge, ts, difficulty: DIFFICULTY, sig });
 }
 
-// Email notification via the send_email binding. Best-effort: D1 is the
-// source of truth, so a failed send never fails the form submission.
+// Email notification via halmail (https://halmail.app) — straybits' own
+// product. Sends a one-way no-reply notification (no from_address_id).
+// Best-effort: D1 is the source of truth, so a failed send never fails the
+// form submission. Requires the HALMAIL_API_KEY secret; the recipient must be
+// a verified halmail recipient.
 async function notify(env, { name, email, message }) {
-  if (!env.NOTIFY || !env.NOTIFY_FROM || !env.NOTIFY_TO) return;
+  if (!env.HALMAIL_API_KEY || !env.NOTIFY_TO) return;
 
-  const headerSafe = (s) => s.replace(/[\r\n\t]+/g, " ");
-  // RFC 2047 encode if the subject strays outside ASCII
-  const subjectRaw = `[straybits.ca] Contact form: ${headerSafe(name)}`;
-  const subject = /^[\x20-\x7e]*$/.test(subjectRaw)
-    ? subjectRaw
-    : `=?utf-8?B?${btoa(String.fromCharCode(...enc.encode(subjectRaw)))}?=`;
-
-  const body = `Name: ${name}\nEmail: ${email}\n\n${message}\n`;
-  const bodyB64 = btoa(String.fromCharCode(...enc.encode(body)))
-    .match(/.{1,76}/g)
-    .join("\r\n");
-
-  const raw =
-    `From: straybits.ca contact form <${env.NOTIFY_FROM}>\r\n` +
-    `To: <${env.NOTIFY_TO}>\r\n` +
-    `Reply-To: ${headerSafe(name)} <${email}>\r\n` +
-    `Subject: ${subject}\r\n` +
-    `Message-ID: <${crypto.randomUUID()}@straybits.ca>\r\n` +
-    `Date: ${new Date().toUTCString()}\r\n` +
-    `MIME-Version: 1.0\r\n` +
-    `Content-Type: text/plain; charset=utf-8\r\n` +
-    `Content-Transfer-Encoding: base64\r\n` +
-    `\r\n` +
-    bodyB64 + `\r\n`;
-
-  await env.NOTIFY.send(new EmailMessage(env.NOTIFY_FROM, env.NOTIFY_TO, raw));
+  const res = await fetch("https://halmail.app/api/v1/messages", {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${env.HALMAIL_API_KEY}`,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      to: [env.NOTIFY_TO],
+      from_name: "straybits.ca contact form",
+      subject: `[straybits.ca] Contact form: ${name.replace(/[\r\n\t]+/g, " ")}`,
+      text: `Name: ${name}\nEmail: ${email}\n\n${message}\n`,
+    }),
+  });
+  if (!res.ok) throw new Error(`halmail send failed: ${res.status} ${await res.text()}`);
 }
 
 async function handleContact(request, env, ctx) {
