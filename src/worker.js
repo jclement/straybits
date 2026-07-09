@@ -12,6 +12,8 @@
  *  - honeypot field + minimum time-on-page
  */
 
+import { EmailMessage } from "cloudflare:email";
+
 const DIFFICULTY = 15; // leading zero bits; ~32k hashes on average, <1s in a browser
 const CHALLENGE_MIN_AGE_MS = 2_000;
 const CHALLENGE_MAX_AGE_MS = 20 * 60_000;
@@ -71,7 +73,40 @@ async function issueChallenge(env) {
   return json({ challenge, ts, difficulty: DIFFICULTY, sig });
 }
 
-async function handleContact(request, env) {
+// Email notification via the send_email binding. Best-effort: D1 is the
+// source of truth, so a failed send never fails the form submission.
+async function notify(env, { name, email, message }) {
+  if (!env.NOTIFY || !env.NOTIFY_FROM || !env.NOTIFY_TO) return;
+
+  const headerSafe = (s) => s.replace(/[\r\n\t]+/g, " ");
+  // RFC 2047 encode if the subject strays outside ASCII
+  const subjectRaw = `[straybits.ca] Contact form: ${headerSafe(name)}`;
+  const subject = /^[\x20-\x7e]*$/.test(subjectRaw)
+    ? subjectRaw
+    : `=?utf-8?B?${btoa(String.fromCharCode(...enc.encode(subjectRaw)))}?=`;
+
+  const body = `Name: ${name}\nEmail: ${email}\n\n${message}\n`;
+  const bodyB64 = btoa(String.fromCharCode(...enc.encode(body)))
+    .match(/.{1,76}/g)
+    .join("\r\n");
+
+  const raw =
+    `From: straybits.ca contact form <${env.NOTIFY_FROM}>\r\n` +
+    `To: <${env.NOTIFY_TO}>\r\n` +
+    `Reply-To: ${headerSafe(name)} <${email}>\r\n` +
+    `Subject: ${subject}\r\n` +
+    `Message-ID: <${crypto.randomUUID()}@straybits.ca>\r\n` +
+    `Date: ${new Date().toUTCString()}\r\n` +
+    `MIME-Version: 1.0\r\n` +
+    `Content-Type: text/plain; charset=utf-8\r\n` +
+    `Content-Transfer-Encoding: base64\r\n` +
+    `\r\n` +
+    bodyB64 + `\r\n`;
+
+  await env.NOTIFY.send(new EmailMessage(env.NOTIFY_FROM, env.NOTIFY_TO, raw));
+}
+
+async function handleContact(request, env, ctx) {
   let body;
   try {
     body = await request.json();
@@ -124,6 +159,12 @@ async function handleContact(request, env) {
     throw err;
   }
 
+  ctx.waitUntil(
+    notify(env, { name, email, message }).catch((err) =>
+      console.error("notify failed:", err),
+    ),
+  );
+
   return json({ ok: true });
 }
 
@@ -139,11 +180,11 @@ async function handleMessages(request, env) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const { pathname } = new URL(request.url);
 
     if (pathname === "/api/challenge" && request.method === "GET") return issueChallenge(env);
-    if (pathname === "/api/contact" && request.method === "POST") return handleContact(request, env);
+    if (pathname === "/api/contact" && request.method === "POST") return handleContact(request, env, ctx);
     if (pathname === "/api/messages" && request.method === "GET") return handleMessages(request, env);
     if (pathname.startsWith("/api/")) return json({ ok: false, error: "Not found." }, 404);
 

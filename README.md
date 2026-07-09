@@ -21,7 +21,7 @@ Plus a honeypot field. Cheap for a human, annoying at bot scale.
 ```sh
 npm run messages
 # or
-curl -H "Authorization: Bearer $ADMIN_TOKEN" https://straybits.<subdomain>.workers.dev/api/messages
+curl -H "Authorization: Bearer $ADMIN_TOKEN" https://straybits.ca/api/messages
 ```
 
 ## Deploys
@@ -43,11 +43,12 @@ wrangler secret put CAPTCHA_SECRET                # any long random string
 wrangler secret put ADMIN_TOKEN                   # bearer token for /api/messages
 ```
 
-## Custom domain
+## Domains & notifications
 
-`straybits.ca` currently points at the old Ghost site. When ready to cut over,
-uncomment the `routes` block in `wrangler.jsonc` and deploy — Cloudflare will
-attach the worker to the domain.
+Deployed to `straybits.ca` and `www.straybits.ca` as Worker custom domains
+(`routes` in wrangler.jsonc). Contact submissions also email jeff@erraticbits.ca
+via the `send_email` binding — sent from `notify@soohno.com`, since Email
+Routing can't be enabled on domains whose MX is Fastmail (see CLAUDE.md).
 
 ## Local dev
 

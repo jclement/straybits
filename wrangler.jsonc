@@ -18,11 +18,24 @@
   ],
   "observability": {
     "enabled": true
-  }
-  // When ready to point straybits.ca at this worker (this will take over from
-  // the current Ghost site!), uncomment:
-  // ,"routes": [
-  //   { "pattern": "straybits.ca", "custom_domain": true },
-  //   { "pattern": "www.straybits.ca", "custom_domain": true }
-  // ]
+  },
+  // Contact-form notifications. The sender domain must be a zone on this
+  // account with Email Routing ENABLED — straybits.ca can't be (Cloudflare
+  // refuses while its Fastmail MX records exist), so we send from soohno.com,
+  // a spare zone set up for exactly this. Destination must be a verified
+  // Email Routing destination address on the account.
+  "send_email": [
+    {
+      "name": "NOTIFY",
+      "destination_address": "jeff@erraticbits.ca"
+    }
+  ],
+  "vars": {
+    "NOTIFY_FROM": "notify@soohno.com",
+    "NOTIFY_TO": "jeff@erraticbits.ca"
+  },
+  "routes": [
+    { "pattern": "straybits.ca", "custom_domain": true },
+    { "pattern": "www.straybits.ca", "custom_domain": true }
+  ]
 }
