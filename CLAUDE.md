@@ -48,8 +48,8 @@ Products are cards in the `#products` section of `index.html`:
    the domain in brackets (`[halmail.org]`), then `h3`, one-paragraph pitch,
    and a `.card-cta` ("visit … →").
 2. Keep the dashed "More compiling" placeholder card last; remove it only if
-   the grid is full. `#products .cards` is a 2-col grid (1-col on mobile) —
-   at 3+ real products consider `repeat(3, 1fr)` to match the services grid.
+   the grid is full. `#products .cards` is a 3-col grid (1-col on mobile) —
+   keep the column count so rows divide evenly (placeholder included).
 
 ## Contact form / captcha (self-hosted, no third parties)
 

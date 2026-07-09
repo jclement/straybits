@@ -299,7 +299,7 @@ section { padding: 90px 0; }
 }
 .card:hover::after { opacity: 0.8; }
 
-#products .cards { grid-template-columns: repeat(2, 1fr); }
+#products .cards { grid-template-columns: repeat(3, 1fr); }
 
 .card.product {
   display: block;
