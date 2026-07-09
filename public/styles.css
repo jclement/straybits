@@ -299,6 +299,25 @@ section { padding: 90px 0; }
 }
 .card:hover::after { opacity: 0.8; }
 
+#products .cards { grid-template-columns: repeat(2, 1fr); }
+
+.card.product {
+  display: block;
+  color: inherit;
+}
+.card.product:hover { text-decoration: none; }
+.card-cta {
+  display: inline-block;
+  margin-top: 16px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--accent);
+}
+.card.soon { border-style: dashed; }
+.card.soon:hover { transform: none; box-shadow: none; border-color: var(--line); }
+.card.soon::after { display: none; }
+.card.soon .num, .card.soon .card-cta { color: var(--muted); }
+
 .card .num {
   font-family: var(--mono);
   font-size: 12px;
@@ -450,7 +469,7 @@ footer {
 
 @media (max-width: 860px) {
   .hero { grid-template-columns: 1fr; padding-top: 130px; gap: 44px; }
-  .cards { grid-template-columns: 1fr; }
+  .cards, #products .cards { grid-template-columns: 1fr; }
   .about-grid { grid-template-columns: 1fr; gap: 28px; }
   .about-grid img { width: 110px; }
   .nav-links { display: none; }
